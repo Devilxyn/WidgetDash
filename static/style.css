@@ -1,0 +1,123 @@
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+
+:root{
+  --bg:#0e1320; --panel:#151a2f; --muted:#8f9bb3; --text:#e8edf7;
+  --accent:#7c3aed; --grid-gap:12px;
+}
+
+/* Base */
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+  background:linear-gradient(180deg,#0b0f1e,#121735);
+  color:var(--text);
+  min-height:100%;
+}
+
+/* Header minimal: solo brand + matita */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);
+  backdrop-filter:blur(6px);position:sticky;top:0;background:rgba(10,12,24,0.6);z-index:5;
+}
+.brand h1{margin:0;font-size:18px}
+.icon-btn{
+  appearance:none;border:1px solid rgba(255,255,255,0.14);background:transparent;
+  color:var(--text);border-radius:10px;padding:8px 10px;cursor:pointer;font-weight:700
+}
+
+/* Pannello a scomparsa (slide-down) */
+.edit-panel{
+  overflow:hidden;
+  max-height:0; /* chiuso */
+  transition:max-height .25s ease;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+}
+.edit-panel.open{ max-height:420px; } /* altezza sufficiente per i controlli */
+
+.panel-row{
+  display:flex;gap:16px;flex-wrap:wrap;
+  padding:14px 16px;max-width:1400px;margin:0 auto;
+}
+.panel-col{
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;
+  flex:1 1 320px;min-width:280px;
+}
+.panel-title{margin:0 0 8px 0;font-size:14px;color:#dbeafe}
+.muted{color:var(--muted);font-size:12px}
+
+.lib{list-style:none;margin:0;padding:0;display:flex;gap:8px;flex-wrap:wrap}
+.lib-item{
+  padding:10px 12px;border:1px dashed rgba(255,255,255,.25);border-radius:10px;
+  cursor:grab;background:rgba(255,255,255,.04)
+}
+.lib-item:active{cursor:grabbing}
+
+.field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);max-width:260px}
+.field input,.field select{
+  padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:#0d1226;color:var(--text)
+}
+.panel-buttons{display:flex;gap:8px;flex-wrap:wrap}
+button{
+  appearance:none;border:none;padding:8px 12px;border-radius:10px;
+  background:var(--accent);color:white;font-weight:600;cursor:pointer
+}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.14);color:var(--muted)}
+button.primary{background:var(--accent)}
+
+/* Wrapper: griglia pieno schermo (meno header + pannello) */
+.wrap{
+  padding:16px;max-width:1400px;margin:0 auto;
+  min-height:calc(100vh - 60px); /* header ~60px */
+  display:block;
+}
+
+/* Griglia */
+.grid{
+  display:grid;gap:var(--grid-gap);
+  height:calc(100vh - 60px - var(--panel-open-h, 0px) - 32px); /* 32px circa padding wrap */
+  /* sopra uso una var per sottrarre l'altezza del pannello quando è aperto (vedi JS) */
+}
+.cell{
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.06);border-radius:14px;position:relative;overflow:hidden;min-height:140px
+}
+/* Tratteggi/placeholder solo in Modifica */
+.editing .cell{border:1px dashed rgba(255,255,255,.18)}
+.cell.drop-target{outline:2px dashed var(--accent)}
+.cell .placeholder{display:none;opacity:.6;align-items:center;justify-content:center;height:100%}
+.editing .cell .placeholder{display:flex}
+
+/* Widget */
+.widget{height:100%;padding:10px}
+.widget .title{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.widget .body{margin-top:6px}
+.badge{font-size:11px;color:#dbeafe;border:1px solid rgba(255,255,255,.18);padding:2px 6px;border-radius:999px}
+.handle{cursor:grab}
+
+.clock .time{font-variant-numeric:tabular-nums;font-size:40px;font-weight:800;letter-spacing:1px}
+.clock .date{color:var(--muted)}
+
+.weather .temp{font-size:34px;font-weight:800}
+.weather .meta{color:var(--muted);font-size:12px}
+
+/* Footer */
+.footer{display:flex;justify-content:center;padding:12px;color:var(--muted)}
+
+
+/* Il widget diventa un contenitore posizionato per il tasto elimina */
+.widget{height:100%;padding:10px; position:relative}
+
+/* Tasto elimina: visibile solo in modalità modifica */
+.widget .delete-btn{
+  position:absolute; bottom: 9px; right:8px;
+  display:none; align-items:center; gap:6px;
+  padding:6px 8px; border-radius:8px;
+  background:rgba(239, 68, 68, .12); color:#fecaca;
+  border:1px solid rgba(239, 68, 68, .35);
+  font-size:12px; cursor:pointer
+}
+.editing .widget .delete-btn{ display:inline-flex }
+.widget .delete-btn:hover{ filter:brightness(1.1) }

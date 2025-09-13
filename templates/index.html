@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>WidgetDash • Python</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <h1>WidgetDash</h1>
+      </div>
+      <div class="top-actions">
+        <button id="toggle-panel" class="icon-btn" title="Apri/chiudi pannello modifica">✏️</button>
+      </div>
+    </header>
+
+    <!-- PANNELLO MODIFICA A SCOMPARSA (stesso layer, no overlay) -->
+    <section id="edit-panel" class="edit-panel" aria-hidden="true">
+      <div class="panel-row">
+        <div class="panel-col">
+          <h3 class="panel-title">Libreria</h3>
+          <ul class="lib">
+            {% for w in widget_library %}
+            <li draggable="true" class="lib-item" data-type="{{ w.type }}">{{ w.name }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="panel-col">
+          <h3 class="panel-title">Meteo</h3>
+          <label class="field">
+            <span>Città</span>
+            <input id="cfg-city" type="text" value="{{ city }}" placeholder="Es. Verona, Milano, Roma"/>
+          </label>
+          <label class="field">
+            <span>Unità</span>
+            <select id="cfg-units">
+              <option value="metric" {% if units=='metric' %}selected{% endif %}>Metric (°C)</option>
+              <option value="imperial" {% if units=='imperial' %}selected{% endif %}>Imperial (°F)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="panel-col">
+          <h3 class="panel-title">Layout</h3>
+
+  <!-- Preset base -->
+<div class="panel-buttons">
+  <!-- Preset base -->
+  <button id="preset-2x2">2×2</button>
+
+  <!-- Preset avanzati -->
+  <button id="preset-tall-left">⬛ | ◻︎◻︎◻︎</button>
+  <button id="preset-tall-right">◻︎◻︎◻︎ | ⬛</button>
+  <button id="preset-wide-top">⬛⬛⬛ sopra / ◻︎◻︎◻︎ sotto</button>
+  <button id="preset-wide-bottom">◻︎◻︎◻︎ sopra / ⬛⬛⬛ sotto</button>
+
+  <button id="clear-layout" class="ghost">Reset</button>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="wrap">
+      <section class="grid" id="grid" aria-label="Griglia"></section>
+    </main>
+
+    <script>
+      window.WD_BACKEND = "";
+      window.WD_DEFAULTS = { city: "{{ city }}", units: "{{ units }}" };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='widgets/clock.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='widgets/weather.js') }}" defer></script>
+
+  </body>
+</html>
