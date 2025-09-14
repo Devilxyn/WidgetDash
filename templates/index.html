@@ -21,11 +21,11 @@
       <div class="panel-row">
         <div class="panel-col">
           <h3 class="panel-title">Libreria</h3>
-          <ul class="lib">
-            {% for w in widget_library %}
-            <li draggable="true" class="lib-item" data-type="{{ w.type }}">{{ w.name }}</li>
-            {% endfor %}
-          </ul>
+<ul class="lib">
+  <li draggable="true" class="lib-item" data-type="clock">Clock</li>
+  <li draggable="true" class="lib-item" data-type="weather">Weather</li>
+  <li draggable="true" class="lib-item" data-type="tasklist">TaskList</li> <!-- NEW -->
+</ul>
         </div>
 
         <div class="panel-col">
@@ -77,6 +77,7 @@
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
     <script src="{{ url_for('static', filename='widgets/clock.js') }}" defer></script>
     <script src="{{ url_for('static', filename='widgets/weather.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='widgets/tasklist.js') }}" defer></script>
 
   </body>
 </html>

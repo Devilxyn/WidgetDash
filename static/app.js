@@ -1,13 +1,28 @@
 // app.js v7 — la ✏️ è l'unico toggle: apre/chiude pannello + entra/esce da Modifica
-const LS_KEY = "wd.layout.v7";
+// chiave stabile + migrazione da versioni precedenti
+const LS_KEY = "wd.layout";  // 👈 fisso
+const OLD_KEYS = ["wd.layout.v7","wd.layout.v6","wd.layout.v5","wd.layout.v4","wd.layout.v3","wd.layout.v2","wd.layout.v1"];
+
+function migrateLayoutIfNeeded(){
+  if (localStorage.getItem(LS_KEY)) return;
+  for (const k of OLD_KEYS){
+    const val = localStorage.getItem(k);
+    if (val){
+      localStorage.setItem(LS_KEY, val);
+      break;
+    }
+  }
+}
+
 let editMode = false;
 
 // ------- Registry -------
 const WidgetRegistry = {
   types: {},
   register(name, factory){ this.types[name] = factory; },
-  create(name, edit){ if (!this.types[name]) return null; return this.types[name](edit); }
+  create(name, ctx){ if (!this.types[name]) return null; return this.types[name](ctx); }
 };
+
 
 // ------- Preset schema builder -------
 const PRESETS = {
@@ -159,13 +174,13 @@ function setupDrop(cell){
 
 function placeWidget(cell, type){
   cell.innerHTML = "";
-  const widget = WidgetRegistry.create(type, editMode);
+  const cellIndex = cell.dataset.index;
+  const widget = WidgetRegistry.create(type, { editMode, cellIndex });
   if (!widget){ cell.innerHTML = "<div class='placeholder'>Widget non disponibile</div>"; return; }
 
-  // Tasto elimina (mostrato solo in .editing via CSS)
   const del = document.createElement("button");
   del.className = "delete-btn";
-  del.innerHTML = "🗑️";
+  del.innerHTML = "🗑️ Elimina";
   del.addEventListener("click", (e)=>{
     e.stopPropagation();
     cell.innerHTML = "";
@@ -179,6 +194,7 @@ function placeWidget(cell, type){
   widget.prepend(del);
   cell.appendChild(widget);
 }
+
 
 // Preset handlers
 btnPreset2.addEventListener("click", ()=> { renderSchema("2x2"); saveLayout(); });
@@ -220,4 +236,5 @@ function loadLayout(){
 
 // Start
 setPanelOpen(false);   // pannello chiuso ⇒ NO modifica
+migrateLayoutIfNeeded()
 loadLayout();
