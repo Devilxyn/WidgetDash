@@ -1,4 +1,4 @@
-# WidgetDash
+# WidgetDash v1
 
 A tiny, self-hosted dashboard built with Flask + vanilla JS.  
 Drag widgets onto a grid, customize the layout, check weather, keep a task list, and play your local music.
