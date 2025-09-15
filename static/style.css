@@ -349,3 +349,48 @@ button.primary {
 .weather-body .main-info{display:flex;align-items:center;gap:12px}
 .weather-body .temp{font-size:clamp(24px,5vw,48px);font-weight:700}
 .weather-body .icon{width:64px;height:64px}
+
+
+/* Player */
+.player .player-body{display:flex;flex-direction:column;gap:10px}
+.player .cover{display:flex;justify-content:center;align-items:center}
+.player .disc{
+  width:72px;height:72px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.2), rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 6px 24px rgba(0,0,0,.25);
+  font-size:28px;
+}
+.player .disc.spin{ animation: spin 5s linear infinite }
+@keyframes spin{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+.player .meta{text-align:center}
+.player .track-title{font-weight:700}
+.player .track-sub{font-size:12px;color:var(--muted)}
+
+.player .controls{display:flex;justify-content:center;align-items:center;gap:8px}
+.player .btn{
+  appearance:none;border:none;border-radius:10px;padding:8px 12px;
+  background:rgba(255,255,255,.08);color:var(--text);cursor:pointer;font-weight:700
+}
+.player .btn.tiny{padding:6px 8px;font-size:12px}
+.player .btn.active{outline:2px solid var(--accent)}
+.player .btn.play{font-size:18px;padding:8px 14px}
+
+.player .progress{display:flex;align-items:center;gap:8px}
+.player .time{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)}
+.player .bar{flex:1;height:8px;border-radius:999px;background:rgba(255,255,255,.08);position:relative;cursor:pointer}
+.player .fill{position:absolute;inset:0 0 0 0;width:0%;background:linear-gradient(90deg,var(--accent),#06b6d4);border-radius:999px}
+
+.player .volume{display:flex;align-items:center;gap:8px}
+.player .volume .vol{width:100%}
+.player .playlist{
+  list-style:none;margin:0;padding:0;max-height:140px;overflow:auto;
+  display:flex;flex-direction:column;gap:6px
+}
+.player .playlist li{
+  padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:13px
+}
+.player .playlist li.active{outline:2px solid var(--accent)}

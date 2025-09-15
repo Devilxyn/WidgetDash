@@ -1,8 +1,0 @@
-{
-  "city": "Verona",
-  "temperature": 21.3,
-  "wind_speed": 5.1,
-  "code": 803,       // codice meteo OpenWeather (803 = broken clouds)
-  "sunrise": 1694491200,
-  "sunset": 1694538000
-}
