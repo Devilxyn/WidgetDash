@@ -18,6 +18,22 @@ MUSIC_DIR = os.getenv("MUSIC_DIR", os.path.join(os.path.dirname(__file__), "medi
 os.makedirs(MUSIC_DIR, exist_ok=True)
 AUDIO_EXTS = {".mp3", ".m4a", ".aac", ".ogg", ".wav", ".flac", ".webm"}
 
+# Minimal WMO code → human description
+WMO_DESC = {
+    0: "Clear sky",
+    1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+    45: "Fog", 48: "Depositing rime fog",
+    51: "Light drizzle", 53: "Moderate drizzle", 55: "Intense drizzle",
+    56: "Freezing drizzle", 57: "Freezing drizzle (dense)",
+    61: "Slight rain", 63: "Moderate rain", 65: "Heavy rain",
+    66: "Freezing rain", 67: "Freezing rain (heavy)",
+    71: "Slight snowfall", 73: "Moderate snowfall", 75: "Heavy snowfall",
+    77: "Snow grains",
+    80: "Rain showers (slight)", 81: "Rain showers (moderate)", 82: "Rain showers (violent)",
+    85: "Snow showers (slight)", 86: "Snow showers (heavy)",
+    95: "Thunderstorm", 96: "Thunderstorm with slight hail", 99: "Thunderstorm with heavy hail",
+}
+
 
 @app.route("/")
 def index():
@@ -78,7 +94,8 @@ def api_weather():
     params = {
         "latitude": gc["lat"],
         "longitude": gc["lon"],
-        "current": "temperature_2m,wind_speed_10m,weather_code",
+        "current": "temperature_2m,wind_speed_10m,weather_code,is_day",
+        "daily": "sunrise,sunset",
         "temperature_unit": temp_unit,
         "wind_speed_unit": wind_unit,
         "timezone": "auto",
@@ -88,10 +105,32 @@ def api_weather():
         r.raise_for_status()
         data = r.json()
         cur = data.get("current", {})
+        daily = data.get("daily", {})
+
+        # sunrise/sunset: Open-Meteo returns ISO strings; convert to epoch seconds if available
+        def to_epoch(s):
+            try:
+                # strings may be like "2025-09-15T06:57" or "...Z"
+                return int(datetime.fromisoformat(s.replace("Z", "")).timestamp())
+            except Exception:
+                return None
+
+        sunrise = None
+        sunset = None
+        if isinstance(daily.get("sunrise"), list) and daily["sunrise"]:
+            sunrise = to_epoch(daily["sunrise"][0])
+        if isinstance(daily.get("sunset"), list) and daily["sunset"]:
+            sunset = to_epoch(daily["sunset"][0])
+
+        code = cur.get("weather_code")
         out = {
             "temperature": cur.get("temperature_2m"),
             "wind_speed": cur.get("wind_speed_10m"),
-            "weather_code": cur.get("weather_code"),
+            "code": code,                                # 👈 align with frontend
+            "description": WMO_DESC.get(code, None),     # helpful text
+            "is_day": cur.get("is_day"),
+            "sunrise": sunrise,
+            "sunset": sunset,
             "units": units,
             "city": city,
         }
@@ -122,6 +161,24 @@ def api_music_list():
 def media_file(filename):
     mimetype, _ = mimetypes.guess_type(filename)
     return send_from_directory(MUSIC_DIR, filename, mimetype=mimetype, as_attachment=False, max_age=0)
+
+
+@app.post("/api/music/upload")
+def api_music_upload():
+    """Permette di caricare più file audio dal browser (estensioni in AUDIO_EXTS)."""
+    if "files" not in request.files:
+        return {"error": "no files"}, 400
+    files = request.files.getlist("files")
+    saved = []
+    for f in files:
+        ext = os.path.splitext(f.filename)[1].lower()
+        if ext not in AUDIO_EXTS:
+            continue
+        safe_name = os.path.basename(f.filename)  # evita path traversal
+        dest = os.path.join(MUSIC_DIR, safe_name)
+        f.save(dest)
+        saved.append(safe_name)
+    return {"saved": saved}
 
 
 if __name__ == "__main__":

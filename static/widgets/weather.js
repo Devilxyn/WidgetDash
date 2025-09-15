@@ -1,4 +1,4 @@
-// Weather widget (v3): descrizione + icone giorno/notte + refresh orario
+// Weather widget (v3+): description + day/night icons + hourly refresh + backend/legacy compatibility
 WidgetRegistry.register("weather", ({ editMode, cellIndex })=>{
   const w = document.createElement("div");
   w.className = "widget weather";
@@ -22,10 +22,8 @@ WidgetRegistry.register("weather", ({ editMode, cellIndex })=>{
   const metaEl = w.querySelector(".meta");
   const descEl = w.querySelector(".desc");
   const iconEl = w.querySelector(".icon");
-  const refreshBtn = w.querySelector(".refresh");
 
   function getIconUrlFromOW(code, isDay){
-    // OpenWeather: 800 clear → 01d/n, 80x → 02d/n, 2xx thunder=11, 3xx drizzle=09, 5xx rain=10, 6xx snow=13, 7xx mist=50
     if (code === 800) return `https://openweathermap.org/img/wn/${isDay?'01d':'01n'}@2x.png`;
     if (String(code).startsWith("80")) return `https://openweathermap.org/img/wn/${isDay?'02d':'02n'}@2x.png`;
     const map = { "2":"11", "3":"09", "5":"10", "6":"13", "7":"50" };
@@ -35,15 +33,14 @@ WidgetRegistry.register("weather", ({ editMode, cellIndex })=>{
   }
 
   function getIconUrlFromWMO(code, isDay){
-    // WMO → scegliamo un'icona OpenWeather approssimata
-    if (code === 0) return `https://openweathermap.org/img/wn/${isDay?'01d':'01n'}@2x.png`; // clear
-    if ([1,2].includes(code)) return `https://openweathermap.org/img/wn/${isDay?'02d':'02n'}@2x.png`; // few clouds
-    if (code === 3) return `https://openweathermap.org/img/wn/${isDay?'03d':'03n'}@2x.png`; // broken/overcast
-    if ([45,48].includes(code)) return `https://openweathermap.org/img/wn/50${isDay?'d':'n'}@2x.png`; // mist/fog
-    if ([51,53,55,56,57].includes(code)) return `https://openweathermap.org/img/wn/09${isDay?'d':'n'}@2x.png`; // drizzle
-    if ([61,63,65,66,67,80,81,82].includes(code)) return `https://openweathermap.org/img/wn/10${isDay?'d':'n'}@2x.png`; // rain/showers
-    if ([71,73,75,77,85,86].includes(code)) return `https://openweathermap.org/img/wn/13${isDay?'d':'n'}@2x.png`; // snow
-    if ([95,96,99].includes(code)) return `https://openweathermap.org/img/wn/11${isDay?'d':'n'}@2x.png`; // thunder
+    if (code === 0) return `https://openweathermap.org/img/wn/${isDay?'01d':'01n'}@2x.png`;
+    if ([1,2].includes(code)) return `https://openweathermap.org/img/wn/${isDay?'02d':'02n'}@2x.png`;
+    if (code === 3) return `https://openweathermap.org/img/wn/${isDay?'03d':'03n'}@2x.png`;
+    if ([45,48].includes(code)) return `https://openweathermap.org/img/wn/50${isDay?'d':'n'}@2x.png`;
+    if ([51,53,55,56,57].includes(code)) return `https://openweathermap.org/img/wn/09${isDay?'d':'n'}@2x.png`;
+    if ([61,63,65,66,67,80,81,82].includes(code)) return `https://openweathermap.org/img/wn/10${isDay?'d':'n'}@2x.png`;
+    if ([71,73,75,77,85,86].includes(code)) return `https://openweathermap.org/img/wn/13${isDay?'d':'n'}@2x.png`;
+    if ([95,96,99].includes(code)) return `https://openweathermap.org/img/wn/11${isDay?'d':'n'}@2x.png`;
     return `https://openweathermap.org/img/wn/${isDay?'02d':'02n'}@2x.png`;
   }
 
@@ -66,14 +63,26 @@ WidgetRegistry.register("weather", ({ editMode, cellIndex })=>{
       const unitSymbol = units === "metric" ? "°C" : "°F";
       tempEl.textContent = Math.round(data.temperature) + unitSymbol;
       metaEl.textContent = `Città: ${data.city} • Vento: ${Math.round(data.wind_speed)} ${units==="metric"?"km/h":"mph"}`;
+
+      // description if provided by backend, else fallback
       descEl.textContent = data.description || "—";
 
-      // giorno/notte: preferisci sunrise/sunset se presenti
-      const now = Math.floor(Date.now()/1000);
-      const isDay = (data.sunrise && data.sunset) ? (now >= data.sunrise && now < data.sunset) : (new Date().getHours()>=7 && new Date().getHours()<19);
+      // decide day/night
+      const nowSec = Math.floor(Date.now()/1000);
+      let isDay;
+      if (typeof data.is_day !== "undefined") {
+        isDay = Boolean(data.is_day);
+      } else if (data.sunrise && data.sunset) {
+        isDay = nowSec >= data.sunrise && nowSec < data.sunset;
+      } else {
+        const h = new Date().getHours();
+        isDay = h >= 7 && h < 19;
+      }
+      w.classList.toggle("weather-day",  isDay === true);
+      w.classList.toggle("weather-night", isDay === false);
 
-      // icona: se code è 2xx-8xx → OpenWeather; altrimenti trattalo come WMO
-      const code = data.code;
+      // code: support both 'code' and legacy 'weather_code'
+      const code = (data.code ?? data.weather_code);
       let iconUrl;
       if (typeof code === "number" && code >= 200 && code <= 899) {
         iconUrl = getIconUrlFromOW(code, isDay);

@@ -1,6 +1,10 @@
+/* ==========================================================================
+   THEME & GLOBALS — glassy, adaptive, accessible
+   ========================================================================== */
 * {
   box-sizing: border-box;
 }
+
 html,
 body {
   margin: 0;
@@ -9,67 +13,162 @@ body {
 }
 
 :root {
-  --bg: #0e1320;
-  --panel: #151a2f;
-  --muted: #8f9bb3;
+  /* Core palette */
+  --bg: #0b0f1e; /* page background start */
+  --bg-2: #121735; /* page background end */
+  --panel: #141a2f; /* panel glass base */
   --text: #e8edf7;
-  --accent: #7c3aed;
+  --muted: #9fb0d0;
+  --accent: #7c3aed; /* violet */
+  --accent-2: #06b6d4; /* cyan for gradients */
+
+  /* Surfaces & borders */
+  --glass-1: rgba(255, 255, 255, 0.1);
+  --glass-2: rgba(255, 255, 255, 0.05);
+  --glass-3: rgba(255, 255, 255, 0.03);
+  --border-1: rgba(255, 255, 255, 0.16);
+  --border-2: rgba(255, 255, 255, 0.08);
+  --shadow-1: 0 8px 28px rgba(0, 0, 0, 0.35);
+
+  /* Layout */
   --grid-gap: 12px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
 }
 
-/* Base */
+/* Base background */
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica,
     Arial, sans-serif;
-  background: linear-gradient(180deg, #0b0f1e, #121735);
   color: var(--text);
   min-height: 100%;
+  background: radial-gradient(
+      1000px 600px at 10% -10%,
+      rgba(124, 58, 237, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 600px at 100% 0%,
+      rgba(6, 182, 212, 0.12),
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--bg), var(--bg-2));
 }
 
-/* Header minimal: solo brand + matita */
+/* Links (if any) */
+a {
+  color: #c7d2fe;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Buttons — global defaults */
+button {
+  appearance: none;
+  border: 1px solid var(--border-1);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.06s ease, background 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+button:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.06)
+  );
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+button:active {
+  transform: translateY(0);
+}
+button:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.55);
+}
+button.primary {
+  background: linear-gradient(180deg, var(--accent), #6d28d9);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+button.ghost {
+  background: transparent;
+  border-color: var(--border-2);
+  color: var(--muted);
+}
+
+/* Inputs */
+input,
+select {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-2);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  color: var(--text);
+}
+input::placeholder {
+  color: #c7d2fe88;
+}
+
+/* ==========================================================================
+   TOP BAR — sticky glass header
+   ========================================================================== */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--border-2);
+  backdrop-filter: blur(8px);
   position: sticky;
   top: 0;
-  background: rgba(10, 12, 24, 0.6);
   z-index: 5;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
 }
 .brand h1 {
   margin: 0;
   font-size: 18px;
+  letter-spacing: 0.3px;
 }
 .icon-btn {
-  appearance: none;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: transparent;
-  color: var(--text);
-  border-radius: 10px;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-weight: 700;
+  border-radius: var(--radius-sm);
 }
 
-/* Pannello a scomparsa (slide-down) */
+/* ==========================================================================
+   EDIT PANEL — slide-down, glass cards
+   ========================================================================== */
 .edit-panel {
   overflow: hidden;
-  max-height: 0; /* chiuso */
-  transition: max-height 0.25s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  max-height: 0;
+  transition: max-height 0.28s ease;
+  border-bottom: 1px solid var(--border-2);
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.08),
     rgba(255, 255, 255, 0.02)
   );
 }
 .edit-panel.open {
-  max-height: 420px;
-} /* altezza sufficiente per i controlli */
+  max-height: 460px;
+}
 
 .panel-row {
   display: flex;
@@ -82,25 +181,28 @@ body {
 .panel-col {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.02)
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
   );
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-md);
   padding: 12px;
   flex: 1 1 320px;
   min-width: 280px;
+  box-shadow: var(--shadow-1);
 }
 .panel-title {
-  margin: 0 0 8px 0;
+  margin: 0 0 8px;
   font-size: 14px;
   color: #dbeafe;
+  letter-spacing: 0.2px;
 }
 .muted {
   color: var(--muted);
   font-size: 12px;
 }
 
+/* Panel library & fields */
 .lib {
   list-style: none;
   margin: 0;
@@ -111,92 +213,119 @@ body {
 }
 .lib-item {
   padding: 10px 12px;
-  border: 1px dashed rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-sm);
   cursor: grab;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease, border-color 0.15s ease,
+    transform 0.06s ease;
+}
+.lib-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
 }
 .lib-item:active {
   cursor: grabbing;
+  transform: translateY(0);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 12px;
   color: var(--muted);
-  max-width: 260px;
-}
-.field input,
-.field select {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #0d1226;
-  color: var(--text);
+  max-width: 300px;
 }
 .panel-buttons {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
-button {
-  appearance: none;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: var(--accent);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
+
+/* ==== Layout preset icon buttons ==== */
+.layout-presets{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+.layout-btn{
+  width: 44px; height: 44px;
+  padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--border-1);
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  color: var(--text);
+  box-shadow: 0 6px 18px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.06);
 }
-button.ghost {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: var(--muted);
-}
-button.primary {
-  background: var(--accent);
+.layout-btn:hover{ transform: translateY(-1px); background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06)); border-color: rgba(255,255,255,.25); }
+.layout-btn:active{ transform: translateY(0); }
+.layout-btn:focus-visible{ outline: 2px solid transparent; box-shadow: 0 0 0 3px rgba(124,58,237,.55); }
+
+.layout-btn.active{
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(124,58,237,.45) inset, 0 8px 22px rgba(124,58,237,.20);
 }
 
-/* Wrapper: griglia pieno schermo (meno header + pannello) */
+.layout-btn-text{ height: 44px; padding: 0 12px; }
+
+/* SVG styling */
+.layout-ico{ width: 26px; height: 26px; display:block; }
+.lp-frame{ fill:none; stroke: currentColor; opacity: .55; stroke-width: 1.5; }
+.lp-lines{ fill:none; stroke: currentColor; opacity: .55; stroke-width: 1.5; stroke-linecap: round; }
+.lp-accent{ fill: currentColor; opacity: .30; }
+
+/* a11y */
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+
+/* ==========================================================================
+   GRID
+   ========================================================================== */
 .wrap {
   padding: 16px;
   max-width: 1400px;
   margin: 0 auto;
-  min-height: calc(100vh - 60px); /* header ~60px */
-  display: block;
+  min-height: calc(100vh - 60px);
 }
-
-/* Griglia */
 .grid {
   display: grid;
   gap: var(--grid-gap);
-  height: calc(
-    100vh - 60px - var(--panel-open-h, 0px) - 32px
-  ); /* 32px circa padding wrap */
-  /* sopra uso una var per sottrarre l'altezza del pannello quando è aperto (vedi JS) */
+  height: calc(100vh - 60px - var(--panel-open-h, 0px) - 32px);
 }
+
+/* Each cell is a container → widgets can adapt to space */
 .cell {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.02)
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.03)
   );
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
   position: relative;
   overflow: hidden;
   min-height: 140px;
+  box-shadow: var(--shadow-1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.08s ease;
+  container-type: inline-size; /* ✨ enables @container rules */
+  container-name: widget-cell;
 }
-/* Tratteggi/placeholder solo in Modifica */
+.cell:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+}
 .editing .cell {
-  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.28);
 }
 .cell.drop-target {
   outline: 2px dashed var(--accent);
+  outline-offset: -6px;
 }
+
 .cell .placeholder {
   display: none;
   opacity: 0.6;
@@ -208,11 +337,18 @@ button.primary {
   display: flex;
 }
 
-/* Widget */
+/* ==========================================================================
+   WIDGET BASE — adaptive via container queries
+   ========================================================================== */
 .widget {
   height: 100%;
-  padding: 10px;
+  padding: 12px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
+
+/* Title row */
 .widget .title {
   display: flex;
   justify-content: space-between;
@@ -221,7 +357,7 @@ button.primary {
   color: var(--muted);
 }
 .widget .body {
-  margin-top: 6px;
+  margin-top: 8px;
 }
 .badge {
   font-size: 11px;
@@ -234,51 +370,17 @@ button.primary {
   cursor: grab;
 }
 
-.clock .time {
-  font-variant-numeric: tabular-nums;
-  font-size: 40px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-.clock .date {
-  color: var(--muted);
-}
-
-.weather .temp {
-  font-size: 34px;
-  font-weight: 800;
-}
-.weather .meta {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: center;
-  padding: 12px;
-  color: var(--muted);
-}
-
-/* Il widget diventa un contenitore posizionato per il tasto elimina */
-.widget {
-  height: 100%;
-  padding: 10px;
-  position: relative;
-}
-
-/* Tasto elimina: visibile solo in modalità modifica */
+/* Delete (edit-only) */
 .widget .delete-btn {
   position: absolute;
-  bottom: 9px;
-  right: 8px;
+  bottom: 10px;
+  right: 10px;
   display: none;
   align-items: center;
   gap: 6px;
   padding: 6px 8px;
   border-radius: 8px;
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(239, 68, 68, 0.14);
   color: #fecaca;
   border: 1px solid rgba(239, 68, 68, 0.35);
   font-size: 12px;
@@ -291,6 +393,193 @@ button.primary {
   filter: brightness(1.1);
 }
 
+/* --- Adaptive sizing with container queries --- */
+/* Small cells (≈1x1) */
+@container widget-cell (max-width: 340px) {
+  .widget {
+    padding: 10px;
+  }
+  .widget .title {
+    font-size: 12px;
+  }
+  .badge {
+    font-size: 10px;
+  }
+}
+/* Medium cells (≈2 columns) */
+@container widget-cell (min-width: 341px) and (max-width: 640px) {
+  .widget {
+    padding: 12px;
+  }
+  .widget .title {
+    font-size: 13px;
+  }
+}
+/* Large cells (wide spans) */
+@container widget-cell (min-width: 641px) {
+  .widget {
+    padding: 14px 16px;
+  }
+  .widget .title {
+    font-size: 14px;
+  }
+}
+
+/* ==========================================================================
+   CLOCK WIDGET — centered + adaptive glass reflections
+   ========================================================================== */
+
+/* Il contenuto sta sopra i riflessi */
+.clock{
+  position: relative;
+  isolation: isolate;           /* i blend non “sporcano” fuori dal widget */
+}
+
+/* Centro perfetto + layout colonnare */
+.clock .clock-body{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  height: 100%;
+  position: relative;
+  z-index: 1;                   /* sopra i riflessi */
+}
+
+/* Riflessi morbidi sullo sfondo, reattivi all’ora del giorno */
+.clock::before{
+  content: "";
+  position: absolute;
+  inset: -18% -12% -14% -12%;   /* leggermente più grande per bordi morbidi */
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(40% 60% at 16% 22%, var(--clock-glow-1), transparent 62%),
+    radial-gradient(55% 55% at 84% 78%, var(--clock-glow-2), transparent 60%);
+  mix-blend-mode: screen;       /* “illumina” senza coprire il contenuto */
+  filter: blur(14px);
+  opacity: .75;                 /* intensità complessiva del riflesso */
+  transition: background 800ms ease, opacity 300ms ease, filter 300ms ease;
+}
+
+/* Tipografia adattiva (container-relative) */
+.clock .time{
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: .5px;
+  font-size: clamp(28px, 8cqw, 64px);
+}
+.clock .date{
+  color: var(--muted);
+  font-size: clamp(12px, 3.3cqw, 16px);
+}
+
+/* Palette default dei riflessi (fallback) */
+.clock{
+  --clock-glow-1: rgba(124, 58, 237, .18);  /* violet */
+  --clock-glow-2: rgba(6, 182, 212, .14);   /* cyan  */
+}
+
+/* Fasce orarie (impostate dal JS con classi) → cambiano soltanto i toni */
+.clock-morning{
+  --accent: #22c55e;
+  --clock-glow-1: rgba(34, 197, 94, .18);   /* green */
+  --clock-glow-2: rgba(250, 204, 21, .12);  /* warm sun */
+}
+.clock-afternoon{
+  --accent: #7c3aed;
+  --clock-glow-1: rgba(124, 58, 237, .20);  /* violet */
+  --clock-glow-2: rgba(6, 182, 212, .14);   /* cyan */
+}
+.clock-evening{
+  --accent: #f59e0b;
+  --clock-glow-1: rgba(245, 158, 11, .18);  /* amber */
+  --clock-glow-2: rgba(251, 113, 133, .12); /* soft rose */
+}
+.clock-night{
+  --accent: #06b6d4;
+  --clock-glow-1: rgba(6, 182, 212, .18);   /* cyan */
+  --clock-glow-2: rgba(99, 102, 241, .12);  /* indigo */
+}
+
+
+/* ==========================================================================
+   WEATHER WIDGET — centered + soft glass reflections
+   ========================================================================== */
+.weather{
+  position: relative;
+  isolation: isolate;                 /* i riflessi restano dentro il widget */
+}
+
+/* centro perfetto */
+.weather .weather-body{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;            /* 👈 verticale */
+  text-align: center;                 /* 👈 orizzontale */
+  gap: 8px;
+  height: 100%;                       /* 👈 prende tutta l’altezza della cella */
+}
+
+.weather .main-info{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;                    /* se la cella è stretta, va a capo in modo carino */
+}
+
+/* tipografia/icone adattive (restano quelle che già usi, le ripeto qui per completezza) */
+.weather-body .temp{
+  font-weight: 800;
+  font-size: clamp(22px, 6.5cqw, 56px);
+}
+.weather-body .icon{
+  width: clamp(40px, 10cqw, 72px);
+  height: clamp(40px, 10cqw, 72px);
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.35));
+}
+.weather .desc{ text-align: center; }
+.weather .meta{ color: var(--muted); font-size: clamp(11px, 2.8cqw, 13px); }
+
+/* riflessi morbidi sullo sfondo (non invadenti) */
+.weather::before{
+  content: "";
+  position: absolute;
+  inset: -18% -12% -14% -12%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(40% 60% at 18% 24%, var(--weather-glow-1), transparent 62%),
+    radial-gradient(55% 55% at 82% 76%, var(--weather-glow-2), transparent 60%);
+  mix-blend-mode: screen;             /* illumina senza coprire il testo */
+  filter: blur(14px);
+  opacity: .70;
+  transition: background 600ms ease, opacity 300ms ease, filter 300ms ease;
+}
+
+/* palette base (fallback) */
+.weather{
+  --weather-glow-1: rgba(124, 58, 237, .18);  /* violet */
+  --weather-glow-2: rgba(6, 182, 212, .14);   /* cyan  */
+}
+
+/* varianti (opzionali) giorno/notte: si attivano se la widget riceve una classe */
+.weather-day{
+  --weather-glow-1: rgba(250, 204, 21, .14);  /* sun yellow */
+  --weather-glow-2: rgba(59, 130, 246, .12);  /* blue sky  */
+}
+.weather-night{
+  --weather-glow-1: rgba(99, 102, 241, .16);  /* indigo */
+  --weather-glow-2: rgba(6, 182, 212, .12);   /* moon cyan */
+}
+
+/* ==========================================================================
+   TASKLIST — glass inputs & adaptive list
+   ========================================================================== */
 .tasklist .task-form {
   display: flex;
   gap: 8px;
@@ -298,10 +587,14 @@ button.primary {
 }
 .tasklist .task-input {
   flex: 1;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #0d1226;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-2);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
   color: var(--text);
 }
 .tasklist .task-list {
@@ -311,18 +604,28 @@ button.primary {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 200px;
+  max-height: 220px;
   overflow: auto;
+}
+@container widget-cell (min-width: 641px) {
+  .tasklist .task-list {
+    max-height: 280px;
+  }
 }
 .tasklist .task-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 10px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.tasklist .task-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 .tasklist .task-row {
   display: flex;
@@ -344,53 +647,258 @@ button.primary {
   border-radius: 6px;
 }
 
-
-.weather-body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-.weather-body .main-info{display:flex;align-items:center;gap:12px}
-.weather-body .temp{font-size:clamp(24px,5vw,48px);font-weight:700}
-.weather-body .icon{width:64px;height:64px}
-
-
-/* Player */
-.player .player-body{display:flex;flex-direction:column;gap:10px}
-.player .cover{display:flex;justify-content:center;align-items:center}
-.player .disc{
-  width:72px;height:72px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.2), rgba(255,255,255,.05));
-  border:1px solid rgba(255,255,255,.1);
-  box-shadow:0 6px 24px rgba(0,0,0,.25);
-  font-size:28px;
+/* ==========================================================================
+   PLAYER — modern glass controls + SVG icons (from your upgraded version)
+   ========================================================================== */
+.player .player-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.player .disc.spin{ animation: spin 5s linear infinite }
-@keyframes spin{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
-
-.player .meta{text-align:center}
-.player .track-title{font-weight:700}
-.player .track-sub{font-size:12px;color:var(--muted)}
-
-.player .controls{display:flex;justify-content:center;align-items:center;gap:8px}
-.player .btn{
-  appearance:none;border:none;border-radius:10px;padding:8px 12px;
-  background:rgba(255,255,255,.08);color:var(--text);cursor:pointer;font-weight:700
+.player .cover {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.player .btn.tiny{padding:6px 8px;font-size:12px}
-.player .btn.active{outline:2px solid var(--accent)}
-.player .btn.play{font-size:18px;padding:8px 14px}
-
-.player .progress{display:flex;align-items:center;gap:8px}
-.player .time{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)}
-.player .bar{flex:1;height:8px;border-radius:999px;background:rgba(255,255,255,.08);position:relative;cursor:pointer}
-.player .fill{position:absolute;inset:0 0 0 0;width:0%;background:linear-gradient(90deg,var(--accent),#06b6d4);border-radius:999px}
-
-.player .volume{display:flex;align-items:center;gap:8px}
-.player .volume .vol{width:100%}
-.player .playlist{
-  list-style:none;margin:0;padding:0;max-height:140px;overflow:auto;
-  display:flex;flex-direction:column;gap:6px
+.player .disc {
+  width: clamp(68px, 18cqw, 96px);
+  height: clamp(68px, 18cqw, 96px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.25),
+      rgba(255, 255, 255, 0.05)
+    ),
+    conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.25);
+  font-size: 0;
+  position: relative;
 }
-.player .playlist li{
-  padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:13px
+.player .disc::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.25);
 }
-.player .playlist li.active{outline:2px solid var(--accent)}
+.player .disc.spin {
+  animation: spin 6s linear infinite;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.player .meta {
+  text-align: center;
+}
+.player .track-title {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.player .track-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.player .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.player .btn.icon {
+  border: 1px solid var(--border-1);
+  border-radius: 12px;
+  padding: 10px;
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.06s ease, background 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.player .btn.icon:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.06)
+  );
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+.player .btn.icon:active {
+  transform: translateY(0);
+}
+.player .btn.icon:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.55);
+}
+.player .btn.icon.active {
+  outline: 0;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.65);
+}
+.player .btn.play {
+  padding: 12px 14px;
+}
+.player .ico {
+  width: 22px;
+  height: 22px;
+  display: block;
+  fill: currentColor;
+}
+
+.player .progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.player .time {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--muted);
+}
+.player .bar {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--glass-1), var(--glass-2));
+  border: 1px solid var(--border-1);
+  position: relative;
+  cursor: pointer;
+}
+.player .bar:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.55);
+}
+.player .fill {
+  position: absolute;
+  inset: 0 0 0 0;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius: 999px;
+}
+.player .knob {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 0%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #eef2ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+.player .volume {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.player .vol-ico .ico {
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+}
+.player .volume .vol {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.player .playlist-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+.player.small .playlist-wrap {
+  display: none;
+}
+.player .playlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.player .playlist li {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-2);
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.player .playlist li:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.player .playlist li.active {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.55);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.35) inset;
+  font-weight: 700;
+}
+
+/* Upload button */
+.player .upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.player .upload-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.player .upload-btn input {
+  display: none;
+}
+.player .upload-btn .ico {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  color: var(--muted);
+}

@@ -35,11 +35,17 @@ WidgetRegistry.register("clock", ({ editMode, cellIndex })=>{
     if (h >= 18 && h <= 21) return "evening";    // 18–21
     return "night";                               // 22–05
   }
-  function applyPhase(h){
-    const p = phaseFromHour(h);
-    w.classList.remove("clock-morning","clock-afternoon","clock-evening","clock-night");
-    w.classList.add(`clock-${p}`);
-  }
+// sostituisci tutta applyPhase con questa versione
+let currentPhaseClass = null;
+function applyPhase(h){
+  const p = phaseFromHour(h);
+  const cls = `clock-${p}`;
+  if (currentPhaseClass === cls) return; // non toccare nulla se è uguale
+  w.classList.remove("clock-morning","clock-afternoon","clock-evening","clock-night");
+  w.classList.add(cls);
+  currentPhaseClass = cls;
+}
+
 
   // ── render
   function tick(){
